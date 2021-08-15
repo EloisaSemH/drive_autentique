@@ -55,6 +55,7 @@
                             <form action="{{ route('review') }}" method="POST">
                                 @csrf
                                 @method('POST')
+                                <input type="hidden" value="{{ $filepath }}" name="filepath" />
                                 <input type="hidden" name="filename" value="{{ $filename }}">
                                 <ul class="list-group">
                                     @foreach($dirsInDir as $dir)

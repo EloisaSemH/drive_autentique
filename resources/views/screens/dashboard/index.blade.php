@@ -81,8 +81,10 @@
                                         @foreach($files as $file)
                                             <li class="list-group-item">
                                                 <div class="form-check">
+                                                    <input type="hidden" value="{{ $file['dirname'] ?? '/' }}" name="filepath"/>
                                                     <input class="form-check-input" type="radio" name="filename"
-                                                           id="{{ $file['basename'] }}" value="{{ $file['name'] }}" required>
+                                                           id="{{ $file['basename'] }}" value="{{ $file['name'] }}"
+                                                           required>
                                                     <label class="form-check-label" for="{{ $file['basename'] }}">
                                                         {{ $file['name'] }}
                                                     </label>
@@ -116,7 +118,7 @@
                         <div>
                             @if(isset($dir))
                                 <a href="{{ route('index') }}" class="btn btn-secondary mt-2">Voltar ao inicio</a>
-{{--                                <a href="{{ route('index', ['dir' => $goBack]) }}" class="btn btn-secondary mt-2">Voltar</a>--}}
+                                {{--                                <a href="{{ route('index', ['dir' => $goBack]) }}" class="btn btn-secondary mt-2">Voltar</a>--}}
                             @endif
                         </div>
                     </div>

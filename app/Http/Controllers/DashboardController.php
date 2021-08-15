@@ -45,34 +45,9 @@ class DashboardController extends Controller
             'dirsInDir' => $dirsInDirs,
             'extension' => 'pdf',
             'route' => '',
+            'filepath' => $request->filepath ?? '',
             'filename' => $request->filename ?? '',
         ]);
-    }
-
-    public function fileToSend(Request $request)
-    {
-        $autentique = new AutentiqueController();
-        if ($request->hasFile('excel')) {
-            $excel = (new UsersImport)->toArray($request->file('excel'));
-            $excel = $excel[0];
-            array_shift($excel);
-
-            foreach ($excel as $item) {
-                $path = storage_path() . '\\app\\contratos\\';
-                $name = $item[0] . '.pdf';
-                $pathWithName = $path . $name;
-                $email = $item[1];
-                $autentique->create($name, $email, $pathWithName);
-            }
-            $message = 'Sucesso';
-        } else {
-            $name = $request->file('file')->getClientOriginalName();
-            $email = $request->email;
-            $archive = $request->file('file')->move(public_path() . '\\documents\\', $request->file('file')->getClientOriginalName());
-            $pathWithName = public_path() . '\\documents\\' . $request->file('file')->getClientOriginalName();
-            $message = $autentique->create($name, $email, $pathWithName);
-        }
-        return view('screens.dashboard.index', ['message' => $message]);
     }
 
     public function review(Request $request)
@@ -80,6 +55,7 @@ class DashboardController extends Controller
         return view('screens.dashboard.review', [
             'title' => 'Revisão',
             'filename' => $request->filename ?? '',
+            'filepath' => $request->filepath ?? '',
             'directory' => $request->directory ?? '',
         ]);
     }
@@ -87,7 +63,7 @@ class DashboardController extends Controller
     public function send(Request $request)
     {
         if ($files = GoogleDriveController::listFolderContents($request->directory)) {
-            $excel = GoogleDriveController::get($request->filename);
+            $excel = GoogleDriveController::get($request->filename, $request->filepath. '/');
             $excel = (new UsersImport)->toArray($excel['target_file']);
             $excel = $excel[0];
             array_shift($excel);
@@ -115,5 +91,32 @@ class DashboardController extends Controller
             'bgColor' => 'danger',
             'message' => 'Ocorreu algum erro desconhecido',
         ]);
+    }
+
+    // old
+    public function fileToSend(Request $request)
+    {
+        $autentique = new AutentiqueController();
+        if ($request->hasFile('excel')) {
+            $excel = (new UsersImport)->toArray($request->file('excel'));
+            $excel = $excel[0];
+            array_shift($excel);
+
+            foreach ($excel as $item) {
+                $path = storage_path() . '\\app\\contratos\\';
+                $name = $item[0] . '.pdf';
+                $pathWithName = $path . $name;
+                $email = $item[1];
+                $autentique->create($name, $email, $pathWithName);
+            }
+            $message = 'Sucesso';
+        } else {
+            $name = $request->file('file')->getClientOriginalName();
+            $email = $request->email;
+            $archive = $request->file('file')->move(public_path() . '\\documents\\', $request->file('file')->getClientOriginalName());
+            $pathWithName = public_path() . '\\documents\\' . $request->file('file')->getClientOriginalName();
+            $message = $autentique->create($name, $email, $pathWithName);
+        }
+        return view('screens.dashboard.index', ['message' => $message]);
     }
 }

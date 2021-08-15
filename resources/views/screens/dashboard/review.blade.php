@@ -25,6 +25,7 @@
                         <form action="{{ route('send') }}" method="POST">
                             @csrf
                             @method('POST')
+                            <input type="hidden" value="{{ $filepath }}" name="filepath"/>
                             <input type="hidden" name="filename" value="{{ $filename }}">
                             <input type="hidden" name="directory" value="{{ $directory }}">
                             <div class="mt-3">
